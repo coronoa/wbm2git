@@ -37,7 +37,7 @@ class SnapWaybackVersions:
 
     def parse_content_from_html(self, html):
         soup = BeautifulSoup(html, features='html.parser')
-        content_html = soup.find(id="content").text
+        content_html = soup.find(id="content").prettify()
         if not content_html:
             raise ValueError('could not parse html')
         return content_html
