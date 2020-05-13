@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 requests = "*"
 beautifulsoup4 = "*"
+gitpython = "*"
 
 [requires]
 python_version = "3.6"
