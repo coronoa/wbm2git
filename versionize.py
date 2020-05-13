@@ -1,20 +1,22 @@
 import os
 import shutil
 import git
+from environs import Env
+
+env = Env()
+env.read_env()
 
 
 class VersionizeContent:
     source_directory = 'saved_content'
     git_directory = '../rkisteckbrief_versions'
     git_repo = None
-    git_user_name = 'git_user_name'
-    git_user_email = 'git_user_email'
 
     def __init__(self):
         open(os.path.join(self.git_directory, 'content.html'), 'a').close()
         self.git_repo = git.Repo.init(self.git_directory)
-        self.git_repo.config_writer().set_value('user', 'name', self.git_user_name).release()
-        self.git_repo.config_writer().set_value('user', 'email', self.git_user_email).release()
+        self.git_repo.config_writer().set_value('user', 'name', env('GIT_USER_NAME')).release()
+        self.git_repo.config_writer().set_value('user', 'email', env('GIT_USER_EMAIL')).release()
         self.git_repo.git.add('content.html')
 
         for filename in os.listdir(self.source_directory):
