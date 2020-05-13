@@ -23,7 +23,7 @@ class SnapWaybackVersions:
         html = self.request_version_html(timestamp)
         content_html = self.parse_content_from_html(html)
         content_html = self.rewrite_links(content_html)
-        filename = 'version_%i.html' % timestamp
+        filename = 'saved_content/version_%i.html' % timestamp
         with open(filename, 'w') as file:
             file.write(content_html)
             print('-- saved content to %s' % filename)
