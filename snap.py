@@ -20,17 +20,25 @@ class SnapWaybackVersions:
         return wayback_json
 
     def save_content_to_storage(self, timestamp: int):
+        html = self.request_version_html(timestamp)
+        content_html = self.parse_content_from_html(html)
+        filename = 'version_%i.html' % timestamp
+        with open(filename, 'w') as file:
+            file.write(content_html)
+            print('-- saved content to %s' % filename)
+
+    def request_version_html(self, timestamp):
         content_url = self.content_url.format(source_url=self.source_url, timestamp=timestamp)
         print('-- request content for timestamp %i' % timestamp)
         html = requests.get(content_url, headers=self.headers).text
+        return html
+
+    def parse_content_from_html(self, html):
         content = re.search('<div id="content">(.*)<!-- #content -->', html, re.DOTALL)
         if not content:
             raise ValueError('could not parse html')
-        content_text = '<div id="content">%s' % content.group(1)
-        filename = 'version_%i.html' % timestamp
-        with open(filename, 'w') as file:
-            file.write(content_text)
-            print('-- saved content to %s' % filename)
+        content_html = '<div id="content">%s' % content.group(1)
+        return content_html
 
 
 SnapWaybackVersions()
