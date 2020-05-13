@@ -22,6 +22,7 @@ class SnapWaybackVersions:
     def save_content_to_storage(self, timestamp: int):
         html = self.request_version_html(timestamp)
         content_html = self.parse_content_from_html(html)
+        content_html = self.rewrite_links(content_html)
         filename = 'version_%i.html' % timestamp
         with open(filename, 'w') as file:
             file.write(content_html)
@@ -38,6 +39,11 @@ class SnapWaybackVersions:
         if not content:
             raise ValueError('could not parse html')
         content_html = '<div id="content">%s' % content.group(1)
+        return content_html
+
+    def rewrite_links(self, content_html):
+        content_html = re.sub('/web/(\d*)im_/', '', content_html)
+        content_html = re.sub('https://web.archive.org/web/(\d*)/', '', content_html)
         return content_html
 
 
