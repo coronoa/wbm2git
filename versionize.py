@@ -1,0 +1,31 @@
+import os
+import shutil
+import git
+
+
+class VersionizeContent:
+    source_directory = 'saved_content'
+    git_directory = '../rkisteckbrief_versions'
+    git_repo = None
+    git_user_name = 'git_user_name'
+    git_user_email = 'git_user_email'
+
+    def __init__(self):
+        open(os.path.join(self.git_directory, 'content.html'), 'a').close()
+        self.git_repo = git.Repo.init(self.git_directory)
+        self.git_repo.config_writer().set_value('user', 'name', self.git_user_name).release()
+        self.git_repo.config_writer().set_value('user', 'email', self.git_user_email).release()
+        self.git_repo.git.add('content.html')
+
+        for filename in os.listdir(self.source_directory):
+            if filename.endswith('.html'):
+                self.commit_with_git(filename)
+
+    def commit_with_git(self, filename):
+        path = os.path.join(self.source_directory, filename)
+        shutil.copy(path, os.path.join(self.git_directory, 'content.html'))
+        self.git_repo.git.add('content.html')
+        print(self.git_repo.index.commit('update %s' % filename))
+
+
+VersionizeContent()
