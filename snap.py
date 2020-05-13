@@ -1,5 +1,6 @@
 import requests
 import re
+from bs4 import BeautifulSoup
 
 
 class SnapWaybackVersions:
@@ -35,10 +36,10 @@ class SnapWaybackVersions:
         return html
 
     def parse_content_from_html(self, html):
-        content = re.search('<div id="content">(.*)<!-- #content -->', html, re.DOTALL)
-        if not content:
+        soup = BeautifulSoup(html, features='html.parser')
+        content_html = soup.find(id="content").text
+        if not content_html:
             raise ValueError('could not parse html')
-        content_html = '<div id="content">%s' % content.group(1)
         return content_html
 
     def rewrite_links(self, content_html):
