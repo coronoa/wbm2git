@@ -17,7 +17,7 @@ default_config = dict(
 )
 
 
-class Run:
+class Wbm2Git:
     source_url = None
     git_repo_path = None
     config = None
