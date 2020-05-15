@@ -19,7 +19,10 @@ class VersionizeContent:
         self.git_repo.config_writer().set_value('user', 'email', env('GIT_USER_EMAIL')).release()
         self.git_repo.git.add('content.html')
 
-        for filename in os.listdir(self.source_directory):
+        version_files = os.listdir(self.source_directory)
+        version_files.sort()
+
+        for filename in version_files:
             if filename.endswith('.html'):
                 self.commit_with_git(filename)
 
