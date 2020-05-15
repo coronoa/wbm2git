@@ -9,8 +9,11 @@ import logging
 default_config = dict(
     git_user_name='None',
     git_user_email='None',
+    # the filename within the git repository
     filename='content.html',
+    # select the part of the website you want to commit
     css_selector_content='#content',
+    # if there is publishing date available for the content, create a selector here
     css_selector_time='#date',
 )
 
@@ -53,18 +56,20 @@ class Run:
 
     def parse_html(self, website_full_html: str, wbm_timestamp: int) -> (str, str):
         soup = BeautifulSoup(website_full_html, features='html.parser')
-        content_html = soup.select(self.config['css_selector_content'])[0].prettify()
-        if not content_html:
+        soup_content = soup.select(self.config['css_selector_content'])
+        if not soup_content:
             raise ValueError('could not parse html')
+        content_html = soup_content[0].prettify()
         time = self.parse_time(website_full_html, wbm_timestamp)
         content_html = self.rewrite_links(content_html)
         return content_html, time
 
     def parse_time(self, website_full_html: str, wbm_timestamp: int) -> str:
         soup = BeautifulSoup(website_full_html, features='html.parser')
-        found_time = soup.select(self.config['css_selector_time'])[0].text()
-        time = found_time or wbm_timestamp
-        return time
+        found_time = soup.select(self.config['css_selector_time'])
+        if not found_time:
+            return str(wbm_timestamp)
+        return found_time[0].text()
 
     # noinspection PyMethodMayBeStatic
     def rewrite_links(self, content_html: str) -> str:
