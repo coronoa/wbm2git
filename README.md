@@ -3,7 +3,7 @@
 grab "internet archive wayback machine" page versions and commit them as git history
 
 ### what for
-if you are interested in the changes of a website text, you can be lucky if the Wayback Machine created snapshots in the past. 
+if you are interested in the changes of a website text, you can be lucky if the [Wayback Machine](https://web.archive.org/) created snapshots in the past. 
 This tool provides a simple way to save the snpashots from WBM into a git history, so you can view for differences between 
 the several commits (using for example `meld` or just the Diff on Github etc.)
 
