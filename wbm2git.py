@@ -5,7 +5,6 @@ import os
 import git
 import logging
 
-
 default_config = dict(
     git_user_name='None',
     git_user_email='None',
@@ -73,9 +72,9 @@ class Run:
 
     # noinspection PyMethodMayBeStatic
     def rewrite_links(self, content_html: str) -> str:
-        content_html = re.sub('/web/(\d*)im_/', '', content_html)
-        content_html = re.sub('/web/(\d*)/', '', content_html)
-        content_html = re.sub('https://web.archive.org/web/(\d*)/', '', content_html)
+        content_html = re.sub(r'/web/(\d*)im_/', '', content_html)
+        content_html = re.sub(r'/web/(\d*)/', '', content_html)
+        content_html = re.sub(r'https://web.archive.org/web/(\d*)/', '', content_html)
         return content_html
 
     def create_git_repo(self) -> None:
