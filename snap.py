@@ -44,6 +44,7 @@ class SnapWaybackVersions:
 
     def rewrite_links(self, content_html):
         content_html = re.sub('/web/(\d*)im_/', '', content_html)
+        content_html = re.sub('/web/(\d*)/', '', content_html)
         content_html = re.sub('https://web.archive.org/web/(\d*)/', '', content_html)
         return content_html
 
