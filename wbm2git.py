@@ -34,7 +34,7 @@ class Run:
         self.create_git_repo()
         for timestamp in self.get_wbm_timestamps():
             full_html = self.get_wbm_html(timestamp)
-            required_content, content_time = self.parse_html(full_html)
+            required_content, content_time = self.parse_html(full_html, timestamp)
             self.commit_content(required_content, content_time)
 
     def get_wbm_timestamps(self) -> list:
@@ -45,22 +45,26 @@ class Run:
             timestamps.append(int(version[1]))
         return timestamps
 
-    def get_wbm_html(self, timestamp) -> str:
+    def get_wbm_html(self, timestamp: int) -> str:
         content_url = self._content_url.format(source_url=self.source_url, timestamp=timestamp)
         logging.info('-- wbm2git: request content for timestamp %i' % timestamp)
         html = requests.get(content_url, headers=self._headers).text
         return html
 
-    # noinspection PyMethodMayBeStatic
-    def parse_html(self, website_full_html) -> (str, int):
+    def parse_html(self, website_full_html: str, wbm_timestamp: int) -> (str, str):
         soup = BeautifulSoup(website_full_html, features='html.parser')
         content_html = soup.select(self.config['css_selector_content'])[0].prettify()
         if not content_html:
             raise ValueError('could not parse html')
-        # todo select time somehow general
-        time = 0
+        time = self.parse_time(website_full_html, wbm_timestamp)
         content_html = self.rewrite_links(content_html)
         return content_html, time
+
+    def parse_time(self, website_full_html: str, wbm_timestamp: int) -> str:
+        soup = BeautifulSoup(website_full_html, features='html.parser')
+        found_time = soup.select(self.config['css_selector_time'])[0].text()
+        time = found_time or wbm_timestamp
+        return time
 
     # noinspection PyMethodMayBeStatic
     def rewrite_links(self, content_html: str) -> str:
@@ -82,7 +86,7 @@ class Run:
         self._git_repo.config_writer().set_value('user', 'name', self.config['git_user_name']).release()
         self._git_repo.config_writer().set_value('user', 'email', self.config['git_user_email']).release()
 
-    def commit_content(self, content: str, time: int) -> None:
+    def commit_content(self, content: str, time: str) -> None:
         filepath = os.path.join(self.git_repo_path, self.config['filename'])
         with open(filepath, 'w') as file:
             file.write(content)
